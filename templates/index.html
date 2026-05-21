@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walmart Caption Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0e13; --card: #16181f; --card2: #1e2029;
+      --border: rgba(255,255,255,0.07);
+      --purple: #7c4dff; --purple-light: #a97dff; --pink: #e040fb;
+      --green: #00e676; --text: #f0f0f8; --muted: #8a8ea8; --radius: 16px;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 52px 24px 36px; position: relative; }
+    .hero::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 320px;
+      background: radial-gradient(ellipse, rgba(124,77,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-block; background: rgba(124,77,255,0.15); border: 1px solid rgba(124,77,255,0.35);
+      color: var(--purple-light); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 5px 14px; border-radius: 99px; margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(26px, 4.5vw, 46px); font-weight: 900; line-height: 1.12;
+      background: linear-gradient(135deg, #fff 30%, var(--purple-light) 75%, var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      max-width: 620px; margin: 0 auto 14px;
+    }
+    .hero p { color: var(--muted); font-size: 15px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+    /* INPUT */
+    .input-wrap { max-width: 740px; margin: 0 auto 48px; padding: 0 20px; }
+    .input-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.4); }
+    .input-row { display: flex; gap: 10px; }
+    .url-input { flex: 1; background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; font-size: 15px; color: var(--text); outline: none; transition: border-color 0.2s; font-family: inherit; }
+    .url-input::placeholder { color: var(--muted); }
+    .url-input:focus { border-color: var(--purple); }
+    .btn-generate { background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; border: none; border-radius: 12px; padding: 14px 26px; font-size: 15px; font-weight: 800; cursor: pointer; white-space: nowrap; transition: opacity 0.2s, transform 0.15s; font-family: inherit; }
+    .btn-generate:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-generate:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .hint { margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .error-box { display: none; margin-top: 14px; background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); border-radius: 10px; padding: 12px 16px; color: #ff6b6b; font-size: 14px; }
+
+    /* LOADER */
+    #loader { display: none; text-align: center; padding: 56px 24px; }
+    .spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 18px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-steps { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; }
+    .step { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; opacity: 0.35; transition: opacity 0.35s; }
+    .step.active { opacity: 1; color: var(--purple-light); }
+    .step.done { opacity: 1; color: var(--green); }
+    .step-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* RESULTS */
+    #results { display: none; max-width: 1060px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* Product bar */
+    .product-bar { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .product-name { font-size: 15px; font-weight: 700; flex: 1; min-width: 180px; }
+    .product-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+    .meta-pill { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 5px 11px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .meta-pill.green { color: var(--green); border-color: rgba(0,230,118,0.2); background: rgba(0,230,118,0.06); }
+    .meta-pill.orange { color: #ffa040; border-color: rgba(255,160,64,0.2); background: rgba(255,160,64,0.06); }
+    .meta-pill.yellow { color: #ffd740; border-color: rgba(255,215,64,0.2); background: rgba(255,215,64,0.06); }
+
+    .section-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+    .section-block { margin-bottom: 40px; }
+
+    /* CAPTION CARDS */
+    .captions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 14px; }
+    .caption-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.18s; }
+    .caption-card:hover { border-color: rgba(124,77,255,0.35); }
+    .caption-header { display: flex; align-items: center; padding: 12px 16px 10px; border-bottom: 1px solid var(--border); }
+    .caption-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+    .caption-body { padding: 20px 20px 16px; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+    .caption-text { font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text); text-align: center; white-space: pre-wrap; word-break: break-word; }
+    .story-text { font-size: 15px; font-weight: 600; line-height: 1.65; color: var(--text); text-align: center; white-space: pre-wrap; word-break: break-word; }
+    .btn-copy {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: calc(100% - 32px); margin: 0 16px 16px;
+      background: var(--card2); border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 13px; font-size: 14px; font-weight: 700; color: var(--text);
+      cursor: pointer; transition: all 0.18s; font-family: inherit;
+    }
+    .btn-copy:hover { background: rgba(124,77,255,0.15); border-color: var(--purple); color: var(--purple-light); }
+    .btn-copy.copied { background: rgba(0,230,118,0.1); border-color: var(--green); color: var(--green); }
+
+    /* Regen row */
+    .regen-row { margin-top: 28px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn-regen { background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.18s; font-family: inherit; }
+    .btn-regen:hover { border-color: var(--purple); color: var(--purple-light); }
+
+    /* STANDALONE SECTIONS */
+    .standalone { max-width: 900px; margin: 0 auto 60px; padding: 0 20px; }
+    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+    .section-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .section-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+    .caption-textarea {
+      width: 100%; background: var(--card2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 18px; font-size: 14px; color: var(--text); outline: none; resize: vertical;
+      min-height: 110px; font-family: inherit; transition: border-color 0.2s; line-height: 1.6;
+    }
+    .caption-textarea:focus { border-color: var(--purple); }
+    .caption-textarea::placeholder { color: var(--muted); }
+    .btn-boost {
+      margin-top: 12px; background: linear-gradient(135deg, #3498db, var(--purple));
+      color: #fff; border: none; border-radius: 10px; padding: 13px 28px;
+      font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;
+      font-family: inherit;
+    }
+    .btn-boost:hover { opacity: 0.88; }
+    .btn-boost:disabled { opacity: 0.45; cursor: not-allowed; }
+    .boost-result { margin-top: 18px; display: none; }
+    .boost-output {
+      background: var(--card2); border: 1px solid rgba(124,77,255,0.3); border-radius: 12px;
+      padding: 20px; font-size: 16px; font-weight: 700; line-height: 1.6; white-space: pre-wrap;
+      word-break: break-word; margin-bottom: 12px;
+    }
+
+    @media (max-width: 700px) {
+      .input-row { flex-direction: column; }
+      .captions-grid { grid-template-columns: 1fr; }
+      .caption-text, .story-text { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="badge">⚡ Viral Facebook Caption Machine</div>
+  <h1>Walmart Caption Studio</h1>
+  <p>Paste a Walmart link → get short viral captions + gradient background posts ready to copy.</p>
+</section>
+
+<div class="input-wrap">
+  <div class="input-card">
+    <div class="input-row">
+      <input type="url" id="walmart-url" class="url-input"
+        placeholder="https://www.walmart.com/ip/Product-Name/1234567890" autocomplete="off" />
+      <button id="btn-generate" class="btn-generate" onclick="processURL()">✨ Generate</button>
+    </div>
+    <p class="hint">Paste any Walmart product link and hit Generate.</p>
+    <div id="error-box" class="error-box"></div>
+  </div>
+</div>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-size:15px;" id="loader-msg">Hang tight…</p>
+  <div class="loader-steps">
+    <div class="step" id="step-1"><span class="step-dot"></span>Reading Walmart product</div>
+    <div class="step" id="step-2"><span class="step-dot"></span>Writing viral captions</div>
+    <div class="step" id="step-3"><span class="step-dot"></span>Writing gradient background posts</div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+
+  <div class="product-bar">
+    <div class="product-name" id="product-name">–</div>
+    <div class="product-meta" id="product-meta"></div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-label">⚡ Short Viral Captions — 1 liner, copy straight to Facebook</p>
+    <div class="captions-grid" id="captions-grid"></div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-label">🎨 Gradient Background Posts — under 128 chars, paste on Facebook with a colored background</p>
+    <div class="captions-grid" id="story-grid"></div>
+  </div>
+
+  <div class="regen-row">
+    <button class="btn-regen" onclick="regenCaptions()">🔄 New Captions</button>
+    <button class="btn-regen" onclick="resetAll()">← New Product</button>
+  </div>
+
+</div>
+
+<!-- STANDALONE: Caption Booster -->
+<div class="standalone" style="margin-top:48px;">
+  <div class="section-card">
+    <div class="section-title">🚀 Caption Booster</div>
+    <div class="section-subtitle">Paste any Facebook caption you already have — get a rewritten version with a stronger hook, urgency, and better algorithm performance. Works without a product URL.</div>
+    <textarea id="boost-input" class="caption-textarea" placeholder="Paste your existing caption here...&#10;&#10;Example: Check out this blanket I found at Walmart, it's only $19 and super soft! Great for winter. Link in bio."></textarea>
+    <button class="btn-boost" id="btn-boost" onclick="boostCaption()">🚀 Boost It</button>
+    <div class="boost-result" id="boost-result">
+      <p class="section-label" style="margin-bottom:10px;">✨ Improved Version</p>
+      <div class="boost-output" id="boost-output"></div>
+      <button class="btn-copy" id="btn-boost-copy" onclick="copyBoost()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy Improved Caption
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let lastURL = '';
+  let lastProductName = '';
+  let lastProductPrice = '';
+
+  const STYLE_META = {
+    PRICE_SHOCK: { label: '💲 Price Shock', color: '#e67e22' },
+    RUN:         { label: '🏃 Run Now',     color: '#e74c3c' },
+    REACTION:    { label: '😱 Pure React',  color: '#8e44ad' },
+    CLEARANCE:   { label: '🔥 Clearance',   color: '#27ae60' },
+    STORY:       { label: '🧵 Story',        color: '#3498db' },
+    URGENCY:     { label: '⚠️ Urgency',      color: '#e74c3c' },
+    TESTIMONIAL: { label: '💬 Testimonial', color: '#9b59b6' },
+    DEAL_HUNTER: { label: '🏷️ Deal Hunter',  color: '#27ae60' },
+  };
+
+  function showError(msg) { const b = document.getElementById('error-box'); b.textContent = msg; b.style.display = 'block'; }
+  function hideError()    { const b = document.getElementById('error-box'); b.style.display = 'none'; b.textContent = ''; }
+
+  function setStep(n) {
+    for (let i = 1; i <= 3; i++) {
+      const el = document.getElementById(`step-${i}`);
+      if (i < n) el.className = 'step done';
+      else if (i === n) el.className = 'step active';
+      else el.className = 'step';
+    }
+  }
+
+  async function processURL() {
+    const url = document.getElementById('walmart-url').value.trim();
+    if (!url) { showError('Paste a Walmart product URL first.'); return; }
+    hideError();
+    lastURL = url;
+    document.getElementById('btn-generate').disabled = true;
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('loader').style.display = 'block';
+    setStep(1);
+
+    try {
+      setStep(2);
+      document.getElementById('loader-msg').textContent = 'Reading product…';
+      const resp = await fetch('/api/process', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) throw new Error(data.error || 'Something went wrong.');
+
+      lastProductName  = data.product.name  || '';
+      lastProductPrice = data.product.price || '';
+
+      setStep(3);
+      renderProductBar(data.product);
+      renderCaptions(data.captions || [], 'captions-grid', false);
+      renderCaptions(data.story_posts || [], 'story-grid', true);
+
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (err) {
+      document.getElementById('loader').style.display = 'none';
+      showError(err.message);
+    } finally {
+      document.getElementById('btn-generate').disabled = false;
+    }
+  }
+
+  async function regenCaptions() {
+    if (!lastURL) return;
+    document.getElementById('captions-grid').innerHTML = '<p style="color:var(--muted);font-size:14px;padding:20px;">Writing new captions…</p>';
+    document.getElementById('story-grid').innerHTML = '';
+    try {
+      const resp = await fetch('/api/process', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: lastURL }),
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) throw new Error(data.error);
+      renderCaptions(data.captions || [], 'captions-grid', false);
+      renderCaptions(data.story_posts || [], 'story-grid', true);
+    } catch (err) {
+      document.getElementById('captions-grid').innerHTML = `<p style="color:#ff6b6b;font-size:14px;">${err.message}</p>`;
+    }
+  }
+
+  function renderProductBar(product) {
+    document.getElementById('product-name').textContent = product.name || 'Walmart Product';
+    const meta = document.getElementById('product-meta');
+    meta.innerHTML = '';
+    if (product.price) meta.innerHTML += `<div class="meta-pill green">💲 $${product.price}</div>`;
+    if (product.original_price && parseFloat(product.original_price) > parseFloat(product.price)) {
+      const pct = Math.round((product.original_price - product.price) / product.original_price * 100);
+      if (pct > 0) meta.innerHTML += `<div class="meta-pill orange">🔥 ${pct}% OFF</div>`;
+    }
+    if (product.rating) meta.innerHTML += `<div class="meta-pill yellow">⭐ ${product.rating}${product.review_count ? ' · ' + Number(product.review_count).toLocaleString() : ''}</div>`;
+  }
+
+  function renderCaptions(captions, gridId, isStory) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = '';
+    if (!captions.length) return;
+    captions.forEach(cap => {
+      const meta = STYLE_META[cap.style] || { label: cap.style, color: '#666' };
+      const card = document.createElement('div');
+      card.className = 'caption-card';
+
+      const header = document.createElement('div');
+      header.className = 'caption-header';
+      const tag = document.createElement('div');
+      tag.className = 'caption-tag';
+      tag.style.cssText = `background:${meta.color}22;color:${meta.color};border:1px solid ${meta.color}44;`;
+      tag.textContent = meta.label;
+      header.appendChild(tag);
+      card.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'caption-body';
+      const text = document.createElement('div');
+      text.className = isStory ? 'story-text' : 'caption-text';
+      text.textContent = cap.caption;
+      body.appendChild(text);
+      card.appendChild(body);
+
+      card.appendChild(makeCopyBtn(cap.caption));
+      grid.appendChild(card);
+    });
+  }
+
+  function makeCopyBtn(text) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-copy';
+    btn.innerHTML = copyIcon() + ' Copy Caption';
+    btn.onclick = () => {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = checkIcon() + ' Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = copyIcon() + ' Copy Caption'; btn.classList.remove('copied'); }, 2200);
+      });
+    };
+    return btn;
+  }
+
+  function copyIcon() {
+    return `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;
+  }
+  function checkIcon() {
+    return `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+  }
+
+  /* ── Caption Booster ─────────────────────────────────────── */
+  async function boostCaption() {
+    const caption = document.getElementById('boost-input').value.trim();
+    if (!caption) { alert('Paste a caption first.'); return; }
+
+    const btn = document.getElementById('btn-boost');
+    btn.disabled = true;
+    btn.textContent = '⏳ Improving…';
+    document.getElementById('boost-result').style.display = 'none';
+
+    try {
+      const resp = await fetch('/api/improve-caption', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caption, product_name: lastProductName, price: lastProductPrice }),
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) throw new Error(data.error);
+      document.getElementById('boost-output').textContent = data.improved;
+      document.getElementById('boost-result').style.display = 'block';
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🚀 Boost It';
+    }
+  }
+
+  function copyBoost() {
+    const text = document.getElementById('boost-output').textContent;
+    const btn = document.getElementById('btn-boost-copy');
+    navigator.clipboard.writeText(text).then(() => {
+      btn.innerHTML = checkIcon() + ' Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = copyIcon() + ' Copy Improved Caption'; btn.classList.remove('copied'); }, 2200);
+    });
+  }
+
+  function resetAll() {
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('walmart-url').value = '';
+    document.getElementById('walmart-url').focus();
+    hideError();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('walmart-url').addEventListener('keydown', e => { if (e.key === 'Enter') processURL(); });
+</script>
+</body>
+</html>
