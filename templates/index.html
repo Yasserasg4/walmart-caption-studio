@@ -360,13 +360,24 @@
   }
 
   /* ── Caption Booster ─────────────────────────────────────── */
+  let boostDebounce = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('boost-input').addEventListener('input', () => {
+      clearTimeout(boostDebounce);
+      const val = document.getElementById('boost-input').value.trim();
+      if (!val) return;
+      boostDebounce = setTimeout(() => boostCaption(), 600);
+    });
+  });
+
   async function boostCaption() {
     const caption = document.getElementById('boost-input').value.trim();
-    if (!caption) { alert('Paste a caption first.'); return; }
+    if (!caption) return;
 
     const btn = document.getElementById('btn-boost');
     btn.disabled = true;
-    btn.textContent = '⏳ Writing variations…';
+    btn.textContent = '⏳ Writing…';
     document.getElementById('boost-result').style.display = 'none';
 
     try {
@@ -377,15 +388,21 @@
       const data = await resp.json();
       if (!resp.ok || data.error) throw new Error(data.error);
 
+      // Pick a random variation to auto-copy
+      const autoIdx = Math.floor(Math.random() * data.variations.length);
+      navigator.clipboard.writeText(data.variations[autoIdx]).catch(() => {});
+
       const grid = document.getElementById('boost-variations-grid');
       grid.innerHTML = '';
-      const labels = ['⚡ Variation 1', '🔥 Variation 2'];
       data.variations.forEach((text, i) => {
+        const isAutoCopied = i === autoIdx;
         const card = document.createElement('div');
         card.className = 'caption-card';
+        card.style.cssText = isAutoCopied ? 'border-color:var(--green);' : '';
         card.innerHTML = `
-          <div class="caption-header">
-            <div class="caption-tag" style="background:rgba(124,77,255,0.12);color:var(--purple-light);border:1px solid rgba(124,77,255,0.3);">${labels[i]}</div>
+          <div class="caption-header" style="justify-content:space-between;">
+            <div class="caption-tag" style="background:rgba(124,77,255,0.12);color:var(--purple-light);border:1px solid rgba(124,77,255,0.3);">Variation ${i + 1}</div>
+            ${isAutoCopied ? `<span style="font-size:11px;font-weight:700;color:var(--green);">✓ Auto-copied</span>` : ''}
           </div>
           <div class="caption-body"><div class="story-text">${text}</div></div>`;
         card.appendChild(makeCopyBtn(text));
@@ -394,7 +411,7 @@
 
       document.getElementById('boost-result').style.display = 'block';
     } catch (err) {
-      alert('Error: ' + err.message);
+      console.error(err);
     } finally {
       btn.disabled = false;
       btn.textContent = '🚀 Boost It';
