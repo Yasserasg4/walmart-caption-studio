@@ -179,10 +179,10 @@ Return ONLY a JSON array:
     return []
 
 
-def improve_existing_caption(caption: str, product_name: str = '', price: str = '') -> str:
+def improve_existing_caption(caption: str, product_name: str = '', price: str = '') -> list[str]:
     """
-    Takes an existing Facebook caption and rewrites it to be more viral,
-    algorithm-friendly, and converting — while keeping the same core message.
+    Returns 2 distinct improved variations of the caption.
+    Each uses a different conversion angle/style.
     """
     client = Groq()
 
@@ -240,20 +240,28 @@ LENGTH + STRUCTURE — CRITICAL: Original is {char_count} characters, {word_coun
 
 Return ONLY the rewritten caption. No explanation, no quotes, no label."""
 
-    response = client.chat.completions.create(
-        model='llama-3.3-70b-versatile',
-        max_tokens=300,
-        temperature=0.85,
-        messages=[
-            {
-                'role': 'system',
-                'content': 'You are a viral Facebook content optimizer. Return ONLY the improved caption text, nothing else.',
-            },
-            {'role': 'user', 'content': prompt},
-        ],
-    )
+    variation_prompts = [
+        prompt + "\n\nSTYLE FOR THIS VARIATION: Lead with urgency or scarcity. Make it feel like something is about to disappear.",
+        prompt + "\n\nSTYLE FOR THIS VARIATION: Lead with a personal confession or reaction. Make it feel like she's talking to her best friend.",
+    ]
 
-    return (response.choices[0].message.content or '').strip().strip('"')
+    results = []
+    for vp in variation_prompts:
+        resp = client.chat.completions.create(
+            model='llama-3.3-70b-versatile',
+            max_tokens=300,
+            temperature=0.9,
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a viral Facebook content optimizer. Return ONLY the improved caption text, nothing else.',
+                },
+                {'role': 'user', 'content': vp},
+            ],
+        )
+        results.append((resp.choices[0].message.content or '').strip().strip('"'))
+
+    return results
 
 
 STYLE_LABELS = {

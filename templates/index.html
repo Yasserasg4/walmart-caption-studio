@@ -127,6 +127,7 @@
     }
 
     @media (max-width: 700px) {
+      #boost-variations-grid { grid-template-columns: 1fr !important; }
       .input-row { flex-direction: column; }
       .captions-grid { grid-template-columns: 1fr; }
       .caption-text, .story-text { font-size: 15px; }
@@ -140,6 +141,25 @@
   <h1>Walmart Caption Studio</h1>
   <p>Paste a Walmart link → get short viral captions + gradient background posts ready to copy.</p>
 </section>
+
+<!-- Caption Booster (top) -->
+<div class="standalone" style="margin-bottom:0;">
+  <div class="section-card">
+    <div class="section-title">🚀 Caption Booster</div>
+    <div class="section-subtitle">Paste any caption you already have — get 2 stronger variations ready to post. Works without a product URL.</div>
+    <textarea id="boost-input" class="caption-textarea" placeholder="Paste your existing caption here...&#10;&#10;Example: Check out this blanket I found at Walmart, it's only $19 and super soft! Link in bio."></textarea>
+    <button class="btn-boost" id="btn-boost" onclick="boostCaption()">🚀 Boost It</button>
+    <div class="boost-result" id="boost-result">
+      <p class="section-label" style="margin:18px 0 12px;">✨ 2 Variations</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="boost-variations-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- divider -->
+<div style="max-width:900px;margin:32px auto;padding:0 20px;">
+  <div style="border-top:1px solid var(--border);"></div>
+</div>
 
 <div class="input-wrap">
   <div class="input-card">
@@ -188,23 +208,6 @@
 
 </div>
 
-<!-- STANDALONE: Caption Booster -->
-<div class="standalone" style="margin-top:48px;">
-  <div class="section-card">
-    <div class="section-title">🚀 Caption Booster</div>
-    <div class="section-subtitle">Paste any Facebook caption you already have — get a rewritten version with a stronger hook, urgency, and better algorithm performance. Works without a product URL.</div>
-    <textarea id="boost-input" class="caption-textarea" placeholder="Paste your existing caption here...&#10;&#10;Example: Check out this blanket I found at Walmart, it's only $19 and super soft! Great for winter. Link in bio."></textarea>
-    <button class="btn-boost" id="btn-boost" onclick="boostCaption()">🚀 Boost It</button>
-    <div class="boost-result" id="boost-result">
-      <p class="section-label" style="margin-bottom:10px;">✨ Improved Version</p>
-      <div class="boost-output" id="boost-output"></div>
-      <button class="btn-copy" id="btn-boost-copy" onclick="copyBoost()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        Copy Improved Caption
-      </button>
-    </div>
-  </div>
-</div>
 
 <script>
   let lastURL = '';
@@ -363,7 +366,7 @@
 
     const btn = document.getElementById('btn-boost');
     btn.disabled = true;
-    btn.textContent = '⏳ Improving…';
+    btn.textContent = '⏳ Writing variations…';
     document.getElementById('boost-result').style.display = 'none';
 
     try {
@@ -373,7 +376,22 @@
       });
       const data = await resp.json();
       if (!resp.ok || data.error) throw new Error(data.error);
-      document.getElementById('boost-output').textContent = data.improved;
+
+      const grid = document.getElementById('boost-variations-grid');
+      grid.innerHTML = '';
+      const labels = ['⚡ Variation 1', '🔥 Variation 2'];
+      data.variations.forEach((text, i) => {
+        const card = document.createElement('div');
+        card.className = 'caption-card';
+        card.innerHTML = `
+          <div class="caption-header">
+            <div class="caption-tag" style="background:rgba(124,77,255,0.12);color:var(--purple-light);border:1px solid rgba(124,77,255,0.3);">${labels[i]}</div>
+          </div>
+          <div class="caption-body"><div class="story-text">${text}</div></div>`;
+        card.appendChild(makeCopyBtn(text));
+        grid.appendChild(card);
+      });
+
       document.getElementById('boost-result').style.display = 'block';
     } catch (err) {
       alert('Error: ' + err.message);
@@ -381,16 +399,6 @@
       btn.disabled = false;
       btn.textContent = '🚀 Boost It';
     }
-  }
-
-  function copyBoost() {
-    const text = document.getElementById('boost-output').textContent;
-    const btn = document.getElementById('btn-boost-copy');
-    navigator.clipboard.writeText(text).then(() => {
-      btn.innerHTML = checkIcon() + ' Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.innerHTML = copyIcon() + ' Copy Improved Caption'; btn.classList.remove('copied'); }, 2200);
-    });
   }
 
   function resetAll() {

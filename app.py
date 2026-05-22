@@ -74,7 +74,7 @@ def improve_caption():
     except Exception as e:
         return jsonify({'error': f'Improvement failed: {str(e)}'}), 500
 
-    return jsonify({'improved': improved})
+    return jsonify({'variations': improved})
 
 
 if __name__ == '__main__':
