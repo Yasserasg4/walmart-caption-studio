@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walmart Caption Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0e13; --card: #16181f; --card2: #1e2029;
+      --border: rgba(255,255,255,0.07);
+      --purple: #7c4dff; --purple-light: #a97dff; --pink: #e040fb;
+      --green: #00e676; --text: #f0f0f8; --muted: #8a8ea8; --radius: 16px;
+    }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    body::before {
+      content: ''; position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(124,77,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Hero */
+    .hero { text-align: center; margin-bottom: 48px; }
+    .badge {
+      display: inline-block; background: rgba(124,77,255,0.15);
+      border: 1px solid rgba(124,77,255,0.35); color: var(--purple-light);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 5px 14px; border-radius: 99px; margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 42px); font-weight: 900; line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--purple-light) 70%, var(--pink));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 10px;
+    }
+    .subtitle { color: var(--muted); font-size: 15px; }
+
+    /* Profile cards */
+    .profiles { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .profile-card {
+      background: var(--card); border: 2px solid var(--border); border-radius: 20px;
+      padding: 36px 32px 28px; cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      text-align: center; min-width: 150px;
+    }
+    .profile-card:hover {
+      border-color: var(--purple); transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(124,77,255,0.2);
+    }
+    .profile-avatar { font-size: 50px; margin-bottom: 14px; line-height: 1; }
+    .profile-name { font-size: 18px; font-weight: 800; }
+    .profile-role { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+
+    /* PIN overlay */
+    .pin-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 100;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .pin-overlay.active { display: flex; }
+    .pin-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 36px 32px; max-width: 340px;
+      width: 100%; text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+    .pin-avatar { font-size: 48px; margin-bottom: 10px; }
+    .pin-name { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+    .pin-hint { color: var(--muted); font-size: 12px; margin-bottom: 20px; }
+
+    /* PIN dots display */
+    .pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 22px; }
+    .pin-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--card2); border: 2px solid var(--border);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pin-dot.filled { background: var(--purple-light); border-color: var(--purple-light); }
+
+    /* Number pad */
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .numpad-btn {
+      background: var(--card2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 10px; font-size: 20px; font-weight: 800; color: var(--text);
+      cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      font-family: inherit; user-select: none;
+    }
+    .numpad-btn:hover { background: rgba(124,77,255,0.15); border-color: rgba(124,77,255,0.4); }
+    .numpad-btn:active { transform: scale(0.93); }
+    .numpad-btn.del { font-size: 18px; color: var(--muted); }
+    .numpad-btn.zero { grid-column: 2; }
+    .numpad-empty { visibility: hidden; }
+
+    .pin-error { color: #ff6b6b; font-size: 13px; min-height: 18px; font-weight: 600; margin-bottom: 6px; }
+    .btn-back {
+      background: none; border: none; color: var(--muted); font-size: 13px;
+      cursor: pointer; font-family: inherit; transition: color 0.15s;
+    }
+    .btn-back:hover { color: var(--text); }
+
+    /* Shake animation on wrong PIN */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-8px); }
+      40%,80%  { transform: translateX(8px); }
+    }
+    .shake { animation: shake 0.35s ease; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="badge">⚡ Walmart Caption Studio</div>
+    <h1>Who's working today?</h1>
+    <p class="subtitle">Select your profile to continue</p>
+  </div>
+
+  <div class="profiles">
+    <div class="profile-card" onclick="selectProfile('safaa','Safaa','👩‍💼','Publisher')">
+      <div class="profile-avatar">👩‍💼</div>
+      <div class="profile-name">Safaa</div>
+      <div class="profile-role">Publisher</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('kaoutar','Kaoutar','👩‍💼','Publisher')">
+      <div class="profile-avatar">👩‍💼</div>
+      <div class="profile-name">Kaoutar</div>
+      <div class="profile-role">Publisher</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('youssef','Youssef','💬','VA')">
+      <div class="profile-avatar">💬</div>
+      <div class="profile-name">Youssef</div>
+      <div class="profile-role">VA</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('admin','Admin','🔐','')">
+      <div class="profile-avatar">🔐</div>
+      <div class="profile-name">Admin</div>
+    </div>
+  </div>
+
+  <!-- PIN overlay -->
+  <div class="pin-overlay" id="pin-overlay">
+    <div class="pin-box" id="pin-box">
+      <div class="pin-avatar" id="pin-avatar"></div>
+      <div class="pin-name"   id="pin-name"></div>
+      <div class="pin-hint">Enter your PIN</div>
+
+      <!-- 4 dot indicators -->
+      <div class="pin-dots">
+        <div class="pin-dot" id="dot-0"></div>
+        <div class="pin-dot" id="dot-1"></div>
+        <div class="pin-dot" id="dot-2"></div>
+        <div class="pin-dot" id="dot-3"></div>
+      </div>
+
+      <!-- Number pad -->
+      <div class="numpad">
+        <button class="numpad-btn" onclick="pad(1)">1</button>
+        <button class="numpad-btn" onclick="pad(2)">2</button>
+        <button class="numpad-btn" onclick="pad(3)">3</button>
+        <button class="numpad-btn" onclick="pad(4)">4</button>
+        <button class="numpad-btn" onclick="pad(5)">5</button>
+        <button class="numpad-btn" onclick="pad(6)">6</button>
+        <button class="numpad-btn" onclick="pad(7)">7</button>
+        <button class="numpad-btn" onclick="pad(8)">8</button>
+        <button class="numpad-btn" onclick="pad(9)">9</button>
+        <div class="numpad-empty"></div>
+        <button class="numpad-btn zero" onclick="pad(0)">0</button>
+        <button class="numpad-btn del" onclick="padDel()">⌫</button>
+      </div>
+
+      <div class="pin-error" id="pin-error"></div>
+      <button class="btn-back" onclick="closePin()">← Back</button>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = '';
+    let pinValue    = '';
+
+    function selectProfile(username, name, avatar, role) {
+      currentUser = username;
+      pinValue    = '';
+      document.getElementById('pin-avatar').textContent = avatar;
+      document.getElementById('pin-name').textContent   = name;
+      document.getElementById('pin-error').textContent  = '';
+      updateDots();
+      document.getElementById('pin-overlay').classList.add('active');
+    }
+
+    function closePin() {
+      document.getElementById('pin-overlay').classList.remove('active');
+      currentUser = '';
+      pinValue    = '';
+    }
+
+    document.getElementById('pin-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closePin();
+    });
+
+    // Also allow physical keyboard
+    document.addEventListener('keydown', e => {
+      if (!document.getElementById('pin-overlay').classList.contains('active')) return;
+      if (e.key >= '0' && e.key <= '9') pad(parseInt(e.key));
+      else if (e.key === 'Backspace') padDel();
+      else if (e.key === 'Escape') closePin();
+    });
+
+    function pad(digit) {
+      if (pinValue.length >= 4) return;
+      pinValue += digit;
+      updateDots();
+      if (pinValue.length === 4) setTimeout(submitPin, 120); // small delay for visual feedback
+    }
+
+    function padDel() {
+      if (!pinValue.length) return;
+      pinValue = pinValue.slice(0, -1);
+      updateDots();
+      document.getElementById('pin-error').textContent = '';
+    }
+
+    function updateDots() {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`dot-${i}`).classList.toggle('filled', i < pinValue.length);
+      }
+    }
+
+    async function submitPin() {
+      if (!pinValue || pinValue.length < 4) return;
+
+      const errEl = document.getElementById('pin-error');
+      errEl.textContent = '';
+
+      try {
+        const resp = await fetch('/login', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ username: currentUser, pin: pinValue }),
+        });
+        const data = await resp.json();
+
+        if (!resp.ok || data.error) {
+          errEl.textContent = data.error || 'Wrong PIN.';
+          pinValue = '';
+          updateDots();
+          // Shake the box
+          const box = document.getElementById('pin-box');
+          box.classList.remove('shake');
+          void box.offsetWidth; // reflow
+          box.classList.add('shake');
+          return;
+        }
+        window.location.href = data.redirect;
+      } catch {
+        errEl.textContent = 'Connection error. Try again.';
+        pinValue = '';
+        updateDots();
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>Admin Dashboard — Walmart Caption Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0e13; --card: #16181f; --card2: #1e2029;
+      --border: rgba(255,255,255,0.07);
+      --purple: #7c4dff; --purple-light: #a97dff; --pink: #e040fb;
+      --green: #00e676; --text: #f0f0f8; --muted: #8a8ea8; --radius: 16px;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .topbar {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 14px 28px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-badge {
+      background: rgba(124,77,255,0.15); border: 1px solid rgba(124,77,255,0.35);
+      color: var(--purple-light); font-size: 10px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 99px;
+    }
+    .topbar-title { font-size: 16px; font-weight: 800; }
+    .topbar-right { display: flex; gap: 10px; }
+    .btn-sm {
+      background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 14px; font-size: 12px; font-weight: 700; color: var(--muted);
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      display: inline-block; transition: all 0.18s;
+    }
+    .btn-sm:hover { border-color: var(--purple); color: var(--purple-light); }
+    .btn-sm.danger:hover { border-color: #e74c3c; color: #ff6b6b; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 36px 24px 80px; }
+    .section-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+    }
+
+    /* Hero */
+    .hero-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 20px;
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px;
+    }
+    @media (max-width: 620px) { .hero-card { grid-template-columns: 1fr; gap: 16px; } }
+    .hero-num { font-size: 72px; font-weight: 900; line-height: 1; color: var(--purple-light); }
+    .hero-meta { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    .hero-meta strong { font-size: 18px; font-weight: 800; color: var(--text); }
+    .prog-track { height: 9px; background: var(--card2); border-radius: 99px; overflow: hidden; margin-bottom: 10px; }
+    .prog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--pink)); }
+    .prog-foot { display: flex; justify-content: space-between; align-items: center; }
+    .prog-pct { font-size: 13px; font-weight: 700; color: var(--purple-light); }
+    .rating-chip {
+      padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 800;
+      border: 1.5px solid; white-space: nowrap;
+    }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; }
+    .stat-label { font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .stat-value { font-size: 34px; font-weight: 900; line-height: 1; }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .c-purple { color: var(--purple-light); }
+    .c-green  { color: var(--green); }
+    .c-yellow { color: #ffd740; }
+    .c-orange { color: #ffa040; }
+
+    /* Chart */
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .chart-title { font-size: 13px; font-weight: 800; margin-bottom: 20px; }
+    .chart-wrap { position: relative; height: 230px; }
+
+    /* Breakdown */
+    .breakdown-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
+    .perf-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .perf-row:last-child { border-bottom: none; }
+    .perf-badge { width: 16px; text-align: center; font-size: 11px; flex-shrink: 0; }
+    .perf-date { font-size: 11px; color: var(--muted); width: 100px; flex-shrink: 0; }
+    .perf-bar-wrap { flex: 1; height: 5px; background: var(--card2); border-radius: 99px; overflow: hidden; }
+    .perf-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--pink)); }
+    .perf-count { font-size: 13px; font-weight: 800; width: 34px; text-align: right; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-badge">🔐 Admin</span>
+    <span class="topbar-title">Walmart Caption Studio</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-sm" onclick="location.reload()">↺ Refresh</button>
+    <a href="/logout" class="btn-sm danger">Logout</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <p class="section-label">👩‍💼 Safaa — Today's Performance</p>
+  <div class="hero-card">
+    <div class="hero-num">{{ today_count }}</div>
+    <div>
+      <div class="hero-meta">Links shortened today out of <strong>{{ daily_target }}</strong> daily goal</div>
+      <div class="prog-track"><div class="prog-fill" style="width:{{ pct }}%;"></div></div>
+      <div class="prog-foot">
+        <span class="prog-pct">{{ pct }}% complete</span>
+      </div>
+    </div>
+    <div class="rating-chip" style="color:{{ rating[2] }};border-color:{{ rating[2] }}55;background:{{ rating[2] }}11;">
+      {{ rating[1] }} {{ rating[0] }}
+    </div>
+  </div>
+
+  <p class="section-label">📊 Overview</p>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Today</div>
+      <div class="stat-value c-purple">{{ today_count }}</div>
+      <div class="stat-sub">/ {{ daily_target }} goal</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">This Week</div>
+      <div class="stat-value c-green">{{ weekly_total }}</div>
+      <div class="stat-sub">last 7 days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">All Time</div>
+      <div class="stat-value c-orange">{{ all_time }}</div>
+      <div class="stat-sub">total links</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Day</div>
+      <div class="stat-value c-yellow">{{ best_day.cnt }}</div>
+      <div class="stat-sub">{{ best_day.day }}</div>
+    </div>
+  </div>
+
+  <p class="section-label">📈 30-Day History</p>
+  <div class="chart-card">
+    <div class="chart-title">Daily links shortened — dashed line = {{ daily_target }} target</div>
+    <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+  </div>
+
+  <p class="section-label">📅 Last 14 Days Breakdown</p>
+  <div class="breakdown-card" id="breakdown"></div>
+
+</div>
+
+<script>
+  const STATS  = {{ stats_json|safe }};
+  const TARGET = {{ daily_target }};
+
+  Chart.defaults.color = '#8a8ea8';
+  Chart.defaults.font.family = 'Inter, sans-serif';
+
+  const labels = STATS.map(d => {
+    const dt = new Date(d.day + 'T00:00:00');
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+
+  new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Links Shortened',
+          data: STATS.map(d => d.cnt),
+          borderColor: '#7c4dff', backgroundColor: 'rgba(124,77,255,0.08)',
+          borderWidth: 2.5, pointBackgroundColor: '#7c4dff',
+          pointRadius: 3, pointHoverRadius: 6, fill: true, tension: 0.35,
+        },
+        {
+          label: `Target (${TARGET})`,
+          data: STATS.map(() => TARGET),
+          borderColor: 'rgba(231,76,60,0.5)', borderWidth: 1.5,
+          borderDash: [6, 4], pointRadius: 0, fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: {
+          backgroundColor: '#16181f', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+          callbacks: {
+            label: ctx => ctx.dataset.label === 'Links Shortened'
+              ? ` ${ctx.parsed.y} links (${Math.min(Math.round(ctx.parsed.y / TARGET * 100), 100)}%)`
+              : ` Target: ${ctx.parsed.y}`,
+          },
+        },
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { maxTicksLimit: 10, font: { size: 11 } } },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true,
+          suggestedMax: Math.max(TARGET * 1.15, Math.max(...STATS.map(d => d.cnt)) * 1.1),
+          ticks: { font: { size: 11 } },
+        },
+      },
+    },
+  });
+
+  // 14-day breakdown
+  const last14 = STATS.slice(-14).reverse();
+  const maxCnt = Math.max(...last14.map(d => d.cnt), 1);
+  const list   = document.getElementById('breakdown');
+  last14.forEach(d => {
+    const met   = d.cnt >= TARGET;
+    const barW  = Math.round(d.cnt / maxCnt * 100);
+    const label = new Date(d.day + 'T00:00:00')
+      .toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const row = document.createElement('div');
+    row.className = 'perf-row';
+    row.innerHTML = `
+      <span class="perf-badge">${met ? '🏆' : ''}</span>
+      <span class="perf-date">${label}</span>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar-fill" style="width:${barW}%;opacity:${d.cnt === 0 ? 0.15 : 1};"></div>
+      </div>
+      <span class="perf-count" style="color:${met ? '#ffd740' : d.cnt === 0 ? '#8a8ea8' : '#f0f0f8'}">${d.cnt}</span>
+    `;
+    list.appendChild(row);
+  });
+
+  setTimeout(() => location.reload(), 5 * 60 * 1000);
+</script>
+</body>
+</html>

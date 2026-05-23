@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Walmart Caption Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -126,21 +129,141 @@
       word-break: break-word; margin-bottom: 12px;
     }
 
+    /* ── Top user bar ── */
+    .user-topbar {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 10px 24px; display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+    }
+    .user-name-chip {
+      font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    .btn-logout-top {
+      font-size: 12px; font-weight: 700; color: var(--muted); text-decoration: none;
+      border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px;
+      transition: all 0.18s; white-space: nowrap;
+    }
+    .btn-logout-top:hover { border-color: #e74c3c; color: #ff6b6b; }
+
+    /* ── Tracker card ── */
+    .tracker-section { max-width: 740px; margin: 0 auto 40px; padding: 0 20px; }
+    .tracker-card {
+      background: linear-gradient(135deg, rgba(124,77,255,0.07) 0%, rgba(224,64,251,0.04) 100%);
+      border: 1px solid rgba(124,77,255,0.22); border-radius: var(--radius); padding: 22px 26px;
+    }
+    .tc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+    .tc-greeting { font-size: 14px; font-weight: 700; }
+    .tc-greeting span { color: var(--muted); font-weight: 500; }
+    .tc-rating { display: inline-flex; align-items: center; gap: 6px; padding: 5px 13px; border-radius: 99px; font-size: 12px; font-weight: 800; border: 1.5px solid; }
+    .tc-body { display: flex; align-items: center; gap: 16px; }
+    .tc-number { font-size: 44px; font-weight: 900; line-height: 1; color: var(--purple-light); flex-shrink: 0; }
+    .tc-right { flex: 1; min-width: 0; }
+    .tc-goal { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .tc-goal strong { color: var(--text); font-size: 14px; }
+    .tc-track { height: 8px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+    .tc-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--pink)); transition: width 0.5s ease; }
+    .tc-foot { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-weight: 600; }
+    .tc-foot em { font-style: normal; color: var(--purple-light); font-weight: 800; }
+
+    /* Session bars */
+    .tc-sessions { margin-top: 18px; display: flex; flex-direction: column; gap: 9px; }
+    .tc-sess-row { display: flex; align-items: center; gap: 10px; }
+    .tc-sess-label { font-size: 10px; font-weight: 700; color: var(--muted); width: 106px; flex-shrink: 0; letter-spacing: 0.02em; }
+    .tc-sess-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .tc-sess-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--pink)); transition: width 0.5s ease; }
+    .tc-sess-fill.done { background: linear-gradient(90deg, #00e676, #00bcd4); }
+    .tc-sess-count { font-size: 12px; font-weight: 800; width: 52px; text-align: right; flex-shrink: 0; white-space: nowrap; }
+    .tc-sess-count span { font-weight: 500; color: var(--muted); }
+    .tc-sess-active { border-left: 2px solid var(--purple-light); padding-left: 6px; border-radius: 2px; }
+
+    /* Peak banner */
+    .peak-banner {
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700;
+    }
+    .peak-banner.warning { background: rgba(255,215,64,0.08); border: 1px solid rgba(255,215,64,0.3); color: #ffd740; }
+    .peak-banner.active  { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.3); color: #00e676; }
+    .peak-banner-icon { font-size: 18px; flex-shrink: 0; }
+    .peak-banner-pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+
+    /* Quality score */
+    .qs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .qs-grid { grid-template-columns: 1fr; } }
+    .qs-card { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .qs-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+    .qs-score { font-size: 40px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .qs-score span { font-size: 15px; font-weight: 600; color: var(--muted); }
+    .qs-grade { display: inline-block; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px; }
+    .qs-breakdown { display: flex; flex-direction: column; gap: 5px; }
+    .qs-row { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+    .qs-row-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .qs-row-label { flex: 1; color: var(--muted); }
+    .qs-row-pts { font-weight: 800; font-size: 12px; }
+
     @media (max-width: 700px) {
       #boost-variations-grid { grid-template-columns: 1fr !important; }
       .input-row { flex-direction: column; }
       .captions-grid { grid-template-columns: 1fr; }
       .caption-text, .story-text { font-size: 15px; }
+      .tc-number { font-size: 34px; }
     }
   </style>
 </head>
 <body>
+
+<!-- Minimal top bar: name + logout -->
+<div class="user-topbar">
+  <span class="user-name-chip">👤 {{ display_name }}</span>
+  <a href="/logout" class="btn-logout-top">Logout</a>
+</div>
 
 <section class="hero">
   <div class="badge">⚡ Viral Facebook Caption Machine</div>
   <h1>Walmart Caption Studio</h1>
   <p>Paste a Walmart link → get short viral captions + gradient background posts ready to copy.</p>
 </section>
+
+<!-- Tracker card -->
+<div class="tracker-section">
+  <div class="tracker-card">
+    <div class="tc-top">
+      <div class="tc-greeting"><span id="tracker-greet">Good morning</span>, <strong>{{ display_name }}</strong>! 👋</div>
+      <div class="tc-rating" id="tc-rating"
+        style="color:{{ rating[2] }};border-color:{{ rating[2] }}55;background:{{ rating[2] }}11;">
+        {{ rating[1] }} {{ rating[0] }}
+      </div>
+    </div>
+    <div class="tc-body">
+      <div class="tc-number" id="tracker-count">{{ today_count }}</div>
+      <div class="tc-right">
+        <div class="tc-goal">links shortened today out of <strong>{{ daily_target }}</strong> goal</div>
+        <div class="tc-track"><div class="tc-fill" id="tracker-fill" style="width:{{ pct }}%;"></div></div>
+        <div class="tc-foot">
+          <span>🔗 Daily progress</span>
+          <em id="tracker-pct">{{ pct }}%</em>
+        </div>
+      </div>
+    </div>
+    <!-- 3 session bars -->
+    <div class="tc-sessions" id="tc-sessions">
+      <div class="tc-sess-row" id="sess-row-1">
+        <span class="tc-sess-label">S1 · 00:00–13:59</span>
+        <div class="tc-sess-track"><div class="tc-sess-fill" id="s1-fill" style="width:0%;"></div></div>
+        <span class="tc-sess-count" id="s1-count">{{ sess_today['1'] }}<span>/100</span></span>
+      </div>
+      <div class="tc-sess-row" id="sess-row-2">
+        <span class="tc-sess-label">S2 · 14:00–16:59</span>
+        <div class="tc-sess-track"><div class="tc-sess-fill" id="s2-fill" style="width:0%;"></div></div>
+        <span class="tc-sess-count" id="s2-count">{{ sess_today['2'] }}<span>/100</span></span>
+      </div>
+      <div class="tc-sess-row" id="sess-row-3">
+        <span class="tc-sess-label">S3 · 17:00–23:59</span>
+        <div class="tc-sess-track"><div class="tc-sess-fill" id="s3-fill" style="width:0%;"></div></div>
+        <span class="tc-sess-count" id="s3-count">{{ sess_today['3'] }}<span>/100</span></span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Caption Booster (top) -->
 <div class="standalone" style="margin-bottom:0;">
@@ -152,6 +275,52 @@
     <div class="boost-result" id="boost-result">
       <p class="section-label" style="margin:18px 0 12px;">✨ 2 Variations</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="boost-variations-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Link Shortener -->
+<div class="standalone" style="margin-top:28px;margin-bottom:0;">
+  <div class="section-card">
+    <div class="section-title">🔗 Link Shortener</div>
+    <div class="section-subtitle">Paste your mavely.app link — get a ready-to-post comment text with the short URL, auto-copied to your clipboard.</div>
+    <!-- Peak time banner -->
+    <div id="peak-banner" style="display:none;"></div>
+    <input type="url" id="shorten-input" class="url-input"
+      placeholder="https://mavely.app/p/your-link"
+      style="width:100%;height:48px;" autocomplete="off" />
+    <div id="shorten-spinner" style="display:none;text-align:center;padding:14px 0;">
+      <div class="spinner" style="width:28px;height:28px;border-width:2px;margin:0 auto 6px;"></div>
+      <span style="color:var(--muted);font-size:13px;">Shortening…</span>
+    </div>
+    <div id="shorten-result" style="display:none;margin-top:16px;">
+      <!-- formatted comment text -->
+      <div style="background:var(--card2);border:1.5px solid rgba(0,230,118,0.35);border-radius:12px;overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);">
+          <span style="font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);">✓ Auto-copied · Comment text</span>
+          <button id="btn-copy-comment" class="btn-copy"
+            style="width:auto;margin:0;padding:7px 14px;font-size:12px;"
+            onclick="copyCommentText()">Copy again</button>
+        </div>
+        <pre id="shorten-comment" style="margin:0;padding:16px 18px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--text);"></pre>
+      </div>
+      <!-- short url below for reference -->
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;color:var(--muted);">Short URL:</span>
+        <span id="shorten-url" style="font-size:13px;font-weight:700;color:var(--purple-light);word-break:break-all;"></span>
+      </div>
+    </div>
+    <div id="shorten-error" style="display:none;margin-top:10px;color:#ff6b6b;font-size:13px;"></div>
+  </div>
+</div>
+
+<!-- Quality Score -->
+<div class="standalone" style="margin-top:20px;margin-bottom:0;">
+  <div class="section-card">
+    <div class="section-title">📊 Daily Quality Score</div>
+    <div class="section-subtitle">40 pts for hitting 300 total · 20 pts per session (100 links each) — max 100</div>
+    <div class="qs-grid" id="qs-grid">
+      <!-- Rendered by JS -->
     </div>
   </div>
 </div>
@@ -168,7 +337,7 @@
         placeholder="https://www.walmart.com/ip/Product-Name/1234567890" autocomplete="off" />
       <button id="btn-generate" class="btn-generate" onclick="processURL()">✨ Generate</button>
     </div>
-    <p class="hint">Paste any Walmart product link and hit Generate.</p>
+
     <div id="error-box" class="error-box"></div>
   </div>
 </div>
@@ -225,6 +394,194 @@
     DEAL_HUNTER: { label: '🏷️ Deal Hunter',  color: '#27ae60' },
   };
 
+  const API_BASE     = window.location.protocol === 'file:' ? 'http://localhost:5000' : '';
+  const DAILY_TARGET = {{ daily_target|default(300) }};
+  let   trackerCount = {{ today_count|default(0) }};
+
+  // Session data from server (UTC buckets)
+  const SESS_SESSION_GOAL = 100;
+  let   sessionsToday = {{ sess_today|tojson }};
+  const sessionsYest  = {{ sess_yest|tojson }};
+  const countYest     = {{ count_yest|default(0) }};
+
+  // ── Session bars ──────────────────────────────────────────
+  function currentSessionNum() {
+    const h = new Date().getUTCHours();
+    if (h < 14) return 1;
+    if (h < 17) return 2;
+    return 3;
+  }
+
+  function updateSessionBars(sessions) {
+    const active = currentSessionNum();
+    [1, 2, 3].forEach(n => {
+      const cnt   = sessions[String(n)] || 0;
+      const pct   = Math.min(Math.round(cnt / SESS_SESSION_GOAL * 100), 100);
+      const fill  = document.getElementById(`s${n}-fill`);
+      const count = document.getElementById(`s${n}-count`);
+      const row   = document.getElementById(`sess-row-${n}`);
+      if (fill)  { fill.style.width = pct + '%'; fill.classList.toggle('done', cnt >= SESS_SESSION_GOAL); }
+      if (count) count.innerHTML = `${cnt}<span>/${SESS_SESSION_GOAL}</span>`;
+      if (row) {
+        row.classList.toggle('tc-sess-active', n === active);
+        // color active session label
+        const label = row.querySelector('.tc-sess-label');
+        if (label) label.style.color = n === active ? 'var(--purple-light)' : '';
+        const cntEl = row.querySelector('.tc-sess-count');
+        if (cntEl) cntEl.style.color = cnt >= SESS_SESSION_GOAL ? '#00e676' : n === active ? 'var(--text)' : 'var(--muted)';
+      }
+    });
+  }
+
+  // ── Quality Score ─────────────────────────────────────────
+  function calcQuality(total, sessions) {
+    let score = 0, breakdown = [];
+    const totalPts = total >= 300 ? 40 : Math.round(total / 300 * 40);
+    score += totalPts;
+    breakdown.push({ label: `Total links (${total}/300)`, pts: totalPts, max: 40, met: total >= 300 });
+    const sNames = ['Morning Rush', 'Lunch Wave', 'Evening Scroll'];
+    [1, 2, 3].forEach(n => {
+      const cnt = sessions[String(n)] || 0;
+      const pts = cnt >= 100 ? 20 : Math.round(cnt / 100 * 20);
+      score += pts;
+      breakdown.push({ label: `S${n} ${sNames[n-1]} (${cnt}/100)`, pts, max: 20, met: cnt >= 100 });
+    });
+    return { score, breakdown };
+  }
+
+  function gradeColor(score) {
+    if (score >= 90) return '#ffd740';
+    if (score >= 70) return '#00e676';
+    if (score >= 50) return '#a97dff';
+    if (score >= 30) return '#e67e22';
+    return '#8a8ea8';
+  }
+
+  function gradeLabel(score) {
+    if (score >= 90) return '🏆 Excellent';
+    if (score >= 70) return '✅ Good';
+    if (score >= 50) return '📈 Decent';
+    if (score >= 30) return '⚡ Needs work';
+    return '😴 Getting started';
+  }
+
+  function renderQualityCard(label, total, sessions) {
+    const { score, breakdown } = calcQuality(total, sessions);
+    const color = gradeColor(score);
+    const rows = breakdown.map(b => {
+      const dotColor = b.met ? '#00e676' : b.pts > 0 ? '#ffd740' : '#8a8ea8';
+      return `<div class="qs-row">
+        <div class="qs-row-dot" style="background:${dotColor};"></div>
+        <span class="qs-row-label">${b.label}</span>
+        <span class="qs-row-pts" style="color:${dotColor};">+${b.pts}</span>
+      </div>`;
+    }).join('');
+    return `<div class="qs-card">
+      <div class="qs-card-title">${label}</div>
+      <div class="qs-score" style="color:${color};">${score}<span>/100</span></div>
+      <span class="qs-grade" style="background:${color}18;color:${color};border:1.5px solid ${color}44;">${gradeLabel(score)}</span>
+      <div class="qs-breakdown">${rows}</div>
+    </div>`;
+  }
+
+  function renderQualityGrid() {
+    const grid = document.getElementById('qs-grid');
+    if (!grid) return;
+    grid.innerHTML =
+      renderQualityCard('📅 Today', trackerCount, sessionsToday) +
+      renderQualityCard('Yesterday', countYest, sessionsYest);
+  }
+
+  // ── Peak time banner ──────────────────────────────────────
+  const PEAKS = [
+    { name: 'Morning Rush',   emoji: '☀️',  utcHour: 14, utcMin: 0 },
+    { name: 'Lunch Wave',     emoji: '🌊',  utcHour: 17, utcMin: 0 },
+    { name: 'Evening Scroll', emoji: '🌙',  utcHour:  0, utcMin: 0 },
+  ];
+
+  function getPeakStatus() {
+    const now = new Date();
+    const totalMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+    for (const p of PEAKS) {
+      const peakMin = p.utcHour * 60 + p.utcMin;
+      let diff;
+      if (p.utcHour === 0) {
+        diff = totalMin >= 23 * 60 + 30 ? totalMin - 24 * 60 : totalMin;
+      } else {
+        diff = totalMin - peakMin;
+      }
+      if (diff >= -30 && diff < 0)  return { type: 'warning', peak: p, minsLeft: -diff };
+      if (diff >= 0  && diff < 30)  return { type: 'active',  peak: p };
+    }
+    return null;
+  }
+
+  function updatePeakBanner() {
+    const el = document.getElementById('peak-banner');
+    if (!el) return;
+    const status = getPeakStatus();
+    if (!status) { el.style.display = 'none'; el.className = ''; el.innerHTML = ''; return; }
+    const { type, peak, minsLeft } = status;
+    el.style.display = 'flex';
+    if (type === 'warning') {
+      el.className = 'peak-banner warning';
+      el.innerHTML = `<span class="peak-banner-icon">${peak.emoji}</span>
+        <span><strong>${peak.name}</strong> peak window starts in <strong>${minsLeft} min</strong> — get your links ready!</span>`;
+    } else {
+      el.className = 'peak-banner active';
+      el.innerHTML = `<span class="peak-banner-pulse"></span>
+        <span class="peak-banner-icon">${peak.emoji}</span>
+        <span><strong>${peak.name} IS LIVE</strong> — Best time to post right now! 🚀</span>`;
+    }
+  }
+
+  // Greeting based on time of day
+  (() => {
+    const h = new Date().getHours();
+    const g = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    const el = document.getElementById('tracker-greet');
+    if (el) el.textContent = g;
+  })();
+
+  const RATINGS = [
+    [0,   0,   'Not started yet',   '😴', '#8a8ea8'],
+    [1,   24,  'Just warming up',   '🌱', '#e74c3c'],
+    [25,  49,  'Building momentum', '📈', '#e67e22'],
+    [50,  74,  'Getting there!',    '💪', '#f1c40f'],
+    [75,  89,  'Almost there!',     '🚀', '#2ecc71'],
+    [90,  99,  'SO close!!',        '🔥', '#27ae60'],
+    [100, 999, 'TARGET REACHED!',   '🏆', '#ffd700'],
+  ];
+
+  function getRating(pct) {
+    return RATINGS.find(r => pct >= r[0] && pct <= r[1]) || RATINGS[0];
+  }
+
+  function updateTracker(newCount, incrementSession) {
+    trackerCount = newCount;
+    if (incrementSession) {
+      const sKey = String(currentSessionNum());
+      sessionsToday = { ...sessionsToday, [sKey]: (sessionsToday[sKey] || 0) + 1 };
+    }
+    const pct  = Math.min(Math.round(trackerCount / DAILY_TARGET * 100), 100);
+    const r    = getRating(trackerCount === 0 ? 0 : pct);
+    const countEl  = document.getElementById('tracker-count');
+    const fillEl   = document.getElementById('tracker-fill');
+    const pctEl    = document.getElementById('tracker-pct');
+    const ratingEl = document.getElementById('tc-rating');
+    if (countEl)  countEl.textContent = trackerCount;
+    if (fillEl)   fillEl.style.width  = pct + '%';
+    if (pctEl)    pctEl.textContent   = pct + '%';
+    if (ratingEl) {
+      ratingEl.textContent   = r[3] + ' ' + r[2];
+      ratingEl.style.color   = r[4];
+      ratingEl.style.borderColor = r[4] + '55';
+      ratingEl.style.background  = r[4] + '11';
+    }
+    updateSessionBars(sessionsToday);
+    renderQualityGrid();
+  }
+
   function showError(msg) { const b = document.getElementById('error-box'); b.textContent = msg; b.style.display = 'block'; }
   function hideError()    { const b = document.getElementById('error-box'); b.style.display = 'none'; b.textContent = ''; }
 
@@ -250,7 +607,7 @@
     try {
       setStep(2);
       document.getElementById('loader-msg').textContent = 'Reading product…';
-      const resp = await fetch('/api/process', {
+      const resp = await fetch(`${API_BASE}/api/process`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       });
@@ -282,7 +639,7 @@
     document.getElementById('captions-grid').innerHTML = '<p style="color:var(--muted);font-size:14px;padding:20px;">Writing new captions…</p>';
     document.getElementById('story-grid').innerHTML = '';
     try {
-      const resp = await fetch('/api/process', {
+      const resp = await fetch(`${API_BASE}/api/process`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: lastURL }),
       });
@@ -381,7 +738,7 @@
     document.getElementById('boost-result').style.display = 'none';
 
     try {
-      const resp = await fetch('/api/improve-caption', {
+      const resp = await fetch(`${API_BASE}/api/improve-caption`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ caption, product_name: lastProductName, price: lastProductPrice }),
       });
@@ -418,6 +775,108 @@
     }
   }
 
+  /* ── Link Shortener ─────────────────────────────────────── */
+
+  const COMMENT_TEMPLATES = [
+    // ── Engagement/Giveaway ──────────────────────────────────
+    `Say "WOW" when you see this!! ❤️\nSome lucky members will win a gift card as a thank you! 🎁🔥 #AD\nGrab it here 👉 {link}`,
+    `Comment "WANT" if you need this in your life!! 😍\nEvery week I pick someone from the comments for a surprise gift card! 🎁 #AD\nGet it now 👉 {link}`,
+    `Type "YES" below if you'd grab this!! 🙋‍♀️\nOne lucky commenter wins a gift card this week — could be YOU! 🎁🔥 #AD\nShop it here 👉 {link}`,
+    `Tag your bestie who NEEDS this!! 👇\nDrop a ❤️ for a chance to win a gift card this week! 🎁 #AD\nLink right here 👉 {link}`,
+    `If you see this, say "MINE"!! 😂❤️\nSurprising one lucky commenter with a gift card this week! 🎁 #AD\nClick here 👉 {link}`,
+    `Drop a 🔥 if you want this!!\nRandom commenters get gift cards every week — could be you! 🎁 #AD\nTap the link 👉 {link}`,
+    `Who else is adding this to their cart RIGHT NOW?! 🛒😩\nCommenting gets you entered for our weekly gift card giveaway! 🎁 #AD\nHere's the link 👉 {link}`,
+    `Comment "DEAL" if this is a steal!! 💰\nWe gift one commenter a gift card every single week 🎁🔥 #AD\nGo grab it 👉 {link}`,
+    `Say something nice below for a chance to win!! ❤️\nGifting a gift card to a lucky member this week! 🎁 #AD\nFind it here 👉 {link}`,
+    `Tell me: would YOU buy this? Comment below!! 👇\nOne commenter gets a gift card surprise this week 🎁🔥 #AD\nCheck it out 👉 {link}`,
+
+    // ── Humorous / Playful ───────────────────────────────────
+    `I told myself I wasn't buying anything this week... I lied 😭\nComment "SAME" if you have zero self-control and I'll enter you for a gift card 🎁 #AD\nDon't say I didn't warn you 👉 {link}`,
+    `My husband: we don't need anything.\nMe: 👀\nComment "shhh" so he doesn't see this 😂🎁 #AD\n👉 {link}`,
+    `POV: you're about to screenshot this and send it to your group chat 😂\nJust tag them directly in the comments — and get entered to win a gift card! 🎁 #AD\n👉 {link}`,
+    `Warning ⚠️ clicking this link may cause an immediate purchase.\nYou've been warned. Drop a ⚠️ in the comments if you're a danger to your own wallet 😂🎁 #AD\n👉 {link}`,
+    `My bank account is giving me THE LOOK right now 😭\nComment "worth it" to make me feel better and get entered for a gift card 🎁 #AD\n👉 {link}`,
+    `Therapist: what triggered the purchase?\nMe: 👇\nComment your excuse below 😂 one commenter wins a gift card this week 🎁 #AD\n{link}`,
+    `I'm not saying this is life changing but... actually yes I am 😩\nComment "send help" if you clicked it immediately 😂 gift card giveaway every week! 🎁 #AD\n👉 {link}`,
+    `Rating this find: 10/10, no notes 🏆\nDrop your rating in the comments and get entered to win a gift card! 🎁 #AD\nSee for yourself 👉 {link}`,
+    `My cart when I'm just "browsing" 🛒😭\nComment "it me" if you understand the struggle — and maybe win a gift card for it 🎁 #AD\n👉 {link}`,
+    `Shhhh 🤫 not everyone needs to know about this deal.\nBut if you're one of us, drop a 🤫 in the comments for a chance at a gift card 🎁 #AD\nOur little secret 👉 {link}`,
+  ];
+
+  let _lastTemplateIdx = -1;
+
+  function buildCommentText(shortUrl) {
+    let idx;
+    do { idx = Math.floor(Math.random() * COMMENT_TEMPLATES.length); }
+    while (idx === _lastTemplateIdx && COMMENT_TEMPLATES.length > 1);
+    _lastTemplateIdx = idx;
+    return COMMENT_TEMPLATES[idx].replace('{link}', shortUrl);
+  }
+
+  let shortenDebounce = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const inp = document.getElementById('shorten-input');
+    inp.addEventListener('input', () => {
+      clearTimeout(shortenDebounce);
+      const val = inp.value.trim();
+      if (!val) {
+        document.getElementById('shorten-result').style.display = 'none';
+        document.getElementById('shorten-error').style.display = 'none';
+        return;
+      }
+      shortenDebounce = setTimeout(() => shortenLink(), 500);
+    });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(shortenDebounce); shortenLink(); } });
+  });
+
+  async function shortenLink() {
+    const url = document.getElementById('shorten-input').value.trim();
+    if (!url) return;
+    document.getElementById('shorten-spinner').style.display = 'block';
+    document.getElementById('shorten-result').style.display = 'none';
+    document.getElementById('shorten-error').style.display = 'none';
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/shorten-link`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) throw new Error(data.error);
+
+      const commentText = buildCommentText(data.short_url);
+      document.getElementById('shorten-url').textContent = data.short_url;
+      document.getElementById('shorten-comment').textContent = commentText;
+      document.getElementById('shorten-result').style.display = 'block';
+
+      navigator.clipboard.writeText(commentText).catch(() => {});
+      updateTracker(trackerCount + 1, true);
+
+      const copyBtn = document.getElementById('btn-copy-comment');
+      copyBtn.innerHTML = checkIcon() + ' Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(() => { copyBtn.innerHTML = 'Copy again'; copyBtn.classList.remove('copied'); }, 2500);
+    } catch (err) {
+      const errEl = document.getElementById('shorten-error');
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    } finally {
+      document.getElementById('shorten-spinner').style.display = 'none';
+    }
+  }
+
+  function copyCommentText() {
+    const text = document.getElementById('shorten-comment').textContent;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('btn-copy-comment');
+      btn.innerHTML = checkIcon() + ' Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = 'Copy again'; btn.classList.remove('copied'); }, 2500);
+    });
+  }
+
   function resetAll() {
     document.getElementById('results').style.display = 'none';
     document.getElementById('walmart-url').value = '';
@@ -427,6 +886,14 @@
   }
 
   document.getElementById('walmart-url').addEventListener('keydown', e => { if (e.key === 'Enter') processURL(); });
+
+  // ── Init ─────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    updateSessionBars(sessionsToday);
+    renderQualityGrid();
+    updatePeakBanner();
+    setInterval(updatePeakBanner, 60 * 1000); // re-check every minute
+  });
 </script>
 </body>
 </html>
